@@ -8,7 +8,6 @@ from tqdm import tqdm
 
 from f3d_extras import (
     download_file_if_url,
-    ffmpeg_output_args,
     image_sequence_to_video,
     turntable_state_interpolator,
 )
@@ -64,9 +63,6 @@ def main():
         tqdm(render_images(), total=fps * duration),  # tqdm for progress bar
         fps,
         video_path,
-        output_args=ffmpeg_output_args(
-            crf=8,  # lower => higher quality
-        ),
     )
 
 

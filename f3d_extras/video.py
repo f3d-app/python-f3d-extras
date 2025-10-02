@@ -12,7 +12,7 @@ FfmpegLoglevelStr = Literal[
 FfmpegLoglevel = int | FfmpegLoglevelStr
 
 
-def ffmpeg_output_args(*, crf: int = 8):
+def ffmpeg_output_args_mp4(*, crf: int = 8):
     """Basic `ffmpeg` arguments to encode `.mp4` videos."""
     return (
         *("-profile:v", "main"),
@@ -22,11 +22,19 @@ def ffmpeg_output_args(*, crf: int = 8):
     )
 
 
+def ffmpeg_output_args_webm(*, crf: int = 8):
+    """Basic `ffmpeg` arguments to encode `.webm` videos."""
+    return (
+        *("-c:v", "libvpx-vp9"),
+        *("-b:v", "0", "-crf", crf),
+    )
+
+
 def image_sequence_to_video(
     images: Iterable[f3d.Image],
     fps: float,
     out_path: Path | str,
-    output_args: Iterable[str | int | float] = ffmpeg_output_args(),
+    output_args: Iterable[str | int | float] = ffmpeg_output_args_mp4(),
     ffmpeg_executable: Path | str = "ffmpeg",
     loglevel: FfmpegLoglevel = "error",
 ):
@@ -59,7 +67,7 @@ def ffmpeg_encode_sequence(
     resolution: tuple[int, int],
     fps: float,
     out_path: Path | str,
-    output_args: Iterable[str | int | float] = ffmpeg_output_args(),
+    output_args: Iterable[str | int | float] = ffmpeg_output_args_mp4(),
     vflip: bool = False,
     pix_fmt: str = "rgb24",
     ffmpeg_executable: Path | str = "ffmpeg",

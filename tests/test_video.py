@@ -1,9 +1,16 @@
-from itertools import repeat
 import subprocess
+from itertools import repeat
 from tempfile import NamedTemporaryFile
 
 import f3d
-from f3d_extras.video import ffmpeg_encode_sequence, image_sequence_to_video
+from pytest import mark
+
+from f3d_extras.video import (
+    ffmpeg_encode_sequence,
+    ffmpeg_output_args_mp4,
+    ffmpeg_output_args_webm,
+    image_sequence_to_video,
+)
 
 
 def test_image_sequence_to_video():
@@ -28,16 +35,26 @@ def test_image_sequence_to_video():
         assert f"{fps} fps" in ffprobe
 
 
-def test_ffmpeg_encode_sequence():
+@mark.parametrize(
+    "suffix, output_args, search",
+    [
+        (".mp4", ffmpeg_output_args_mp4(), "Video: h264"),
+        (".webm", ffmpeg_output_args_webm(), "Video: vp9"),
+    ],
+)
+def test_ffmpeg_encode_sequence(
+    suffix: str, output_args: tuple[str | int, ...], search: str
+):
     w, h = 12, 8
     fps = 5
     duration = 2
-    with NamedTemporaryFile(suffix=".mp4") as tmp:
+    with NamedTemporaryFile(suffix=suffix) as tmp:
         ffmpeg_encode_sequence(
             repeat(b"\0" * w * h * 3, fps * duration),
             (w, h),
             fps,
             tmp.name,
+            output_args=output_args,
             vflip=True,
         )
 
@@ -47,3 +64,4 @@ def test_ffmpeg_encode_sequence():
         assert f"{w}x{h}" in ffprobe
         assert f"Duration: 00:00:{duration:02d}" in ffprobe
         assert f"{fps} fps" in ffprobe
+        assert search in ffprobe
