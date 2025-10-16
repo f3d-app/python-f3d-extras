@@ -9,7 +9,7 @@ from tqdm import tqdm
 from f3d_extras import (
     download_file_if_url,
     image_sequence_to_video,
-    turntable_state_interpolator,
+    turntable_interpolator,
 )
 
 
@@ -46,16 +46,12 @@ def main():
     engine.window.camera.position = initial_camera_position
     engine.window.camera.reset_to_bounds(zoom_factor=camera_zoom_factor)
 
-    camera_state_interpolator = turntable_state_interpolator(
-        engine.window.camera.state,
-        engine.options["scene.up_direction"],  # type: ignore
-        turns=turns,
-    )
+    camera_state_interpolator = turntable_interpolator(engine, turns=turns)
 
     def render_images():
         t = 0.0
         while t < duration:
-            engine.window.camera.state = camera_state_interpolator(float(t) / duration)
+            camera_state_interpolator(t / duration)
             yield engine.window.render_to_image()
             t += 1.0 / fps
 
