@@ -6,6 +6,25 @@ import numpy as np
 from numpy.typing import NDArray
 
 
+def turntable_interpolator(
+    engine: f3d.Engine, *, turns: float = 1
+) -> Callable[[float], None]:
+    """Return a `t: float -> None` function that interpolates from `0 <= t <= 1`
+    to spin the camera `turns` times around the engine's current focal point
+    about its current `up_direction`."""
+
+    state_interpolator = turntable_state_interpolator(
+        initial_state=engine.window.camera.state,
+        axis=engine.options["scene.up_direction"],  # type: ignore
+        turns=turns,
+    )
+
+    def f(t: float):
+        engine.window.camera.state = state_interpolator(t)
+
+    return f
+
+
 def turntable_state_interpolator(
     initial_state: f3d.CameraState,
     axis: tuple[float, float, float],
