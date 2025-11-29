@@ -49,11 +49,11 @@ def main():
     camera_state_interpolator = turntable_interpolator(engine, turns=turns)
 
     def render_images():
-        t = 0.0
-        while t < duration:
-            camera_state_interpolator(t / duration)
+        time = 0.0
+        while time < duration:
+            camera_state_interpolator(time / duration)
             yield engine.window.render_to_image()
-            t += 1.0 / fps
+            time += 1.0 / fps
 
     image_sequence_to_video(
         tqdm(render_images(), total=fps * duration),  # tqdm for progress bar
