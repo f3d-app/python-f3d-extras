@@ -29,7 +29,7 @@ def main():
         "render.background.skybox": True,
         "render.background.blur.enable": True,
         "render.hdri.file": str(download_file_if_url(hdri_fn)),
-        "render.effect.translucency_support": True,
+        "render.effect.blending.enable": True,
         "render.effect.tone_mapping": True,
         "render.effect.ambient_occlusion": True,
         "render.effect.antialiasing.enable": True,
